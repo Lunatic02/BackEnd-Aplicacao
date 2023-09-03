@@ -2,6 +2,8 @@ import { FastifyInstance, FastifyReply, FastifyRequest} from "fastify";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
+import { verifyJwt } from "../controller/user";
+import { request } from "http";
 
 
 const prisma = new PrismaClient()
@@ -24,7 +26,6 @@ export const userRoutes = async (app: FastifyInstance)=>{
       })
       return response.status(200).send(user)
     })
-
   app.post('/login', async (request: FastifyRequest, response: FastifyReply)=>{ 
       const bodyUserParamsSchema = z.object({
         email: z.string(),
@@ -55,4 +56,13 @@ export const userRoutes = async (app: FastifyInstance)=>{
       
     return response.status(200).send({token: token})
    })
+  app.get('/me/:id', {onRequest: [verifyJwt]}, async (request: FastifyRequest, response: FastifyReply)=>{
+    const {id} = request.params
+    const user = await prisma.user.findUnique({
+      where: {
+        email: id
+      }
+    })
+    response.code(200).send(user)
+  })
 }
