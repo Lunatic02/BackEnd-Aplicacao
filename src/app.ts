@@ -2,9 +2,9 @@ import fastify from 'fastify'
 import { userRoutes } from './routes/userRoutes'
 import cors from '@fastify/cors'
 import cookie from '@fastify/cookie'
-import { hiRoutes } from './routes/hiRoutes';
 import fastifyJwt from '@fastify/jwt';
 import dotenv from 'dotenv';
+import { transactionRoutes } from './routes/transactionRoutes';
 
 export const app = fastify()
 dotenv.config();
@@ -20,4 +20,4 @@ app.register(fastifyJwt, {
 
 
 app.register(userRoutes)
-app.register(hiRoutes)
+app.register(transactionRoutes)

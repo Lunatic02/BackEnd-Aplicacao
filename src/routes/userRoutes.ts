@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyReply, FastifyRequest} from "fastify";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
-import jwt from "jsonwebtoken";
+import { Prisma } from '@prisma/client'
 import { verifyJwt } from "../controller/user";
-import { request } from "http";
 import { compare, hash } from "bcryptjs";
+import { UserProps } from "../@types/types";
 
 
 const prisma = new PrismaClient()
@@ -68,13 +68,18 @@ export const userRoutes = async (app: FastifyInstance)=>{
   });
 
   app.get('/me/:id', {onRequest: [verifyJwt]}, async (request: FastifyRequest, response: FastifyReply)=>{
-    const {id} = request.params
-    const user = await prisma.user.findUnique({
+    const {id}= request.params as { id: string }
+    const user: UserProps | null = await prisma.user.findUnique({
       where: {
         email: id
       }
     })
-    response.code(200).send(user)
+    if (user === null) {
+      response.code(404).send('User Not Found');
+      
+    } else {
+      response.code(200).send({ name: user.name, email: user.email });
+    }
   })
 }
 
