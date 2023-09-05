@@ -38,4 +38,19 @@ export async function transactionRoutes(app: FastifyInstance) {
 
     return response.status(200).send(transaction);
   })
+  app.get('/transaction/:id', {onRequest: [verifyJwt]},async (request: FastifyRequest, response: FastifyReply) => {
+    const {id}= request.params as { id: string }
+    const user: any = await prisma.user.findUnique({
+      where: {
+        email: id
+      }
+    })
+    const transaction = await prisma.transaction.findMany({
+     where: {
+      userId: user.id
+     }
+    })
+
+    return response.status(200).send(transaction);
+  })
 }
