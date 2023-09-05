@@ -8,9 +8,6 @@ import dotenv from 'dotenv';
 
 export const app = fastify()
 dotenv.config();
-
-
-
 app.register(cookie)
 app.register(cors, {
   methods: ['GET', 'POST']
