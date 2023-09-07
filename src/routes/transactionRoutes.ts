@@ -24,7 +24,6 @@ export async function transactionRoutes(app: FastifyInstance) {
     });
 
     const { title, amount, description, category, type } = bodyTransactionsParamsSchema.parse(request.body);
-
     const transaction = await prisma.transaction.create({
       data: {
         userId: user.id,
