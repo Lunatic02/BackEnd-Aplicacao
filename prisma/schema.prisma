@@ -21,7 +21,7 @@ model User {
 model Transaction {
   id          Int      @id @default(autoincrement())
   title       String
-  amount      Int
+  amount      Float
   description String
   category    String
   expentAt    DateTime @default(now())
