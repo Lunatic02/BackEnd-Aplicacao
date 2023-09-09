@@ -24,19 +24,26 @@ export async function transactionRoutes(app: FastifyInstance) {
     });
 
     const { title, amount, description, category, type } = bodyTransactionsParamsSchema.parse(request.body);
-    const transaction = await prisma.transaction.create({
-      data: {
-        userId: user.id,
-        title,
-        amount,
-        description,
-        category,
-        type
-      }
-    })
+    try{
+      const transaction = await prisma.transaction.create({
+        data: {
+          userId: user.id,
+          title,
+          amount,
+          description,
+          category,
+          type
+        }
+      })
+      return response.status(200).send(transaction);
+    }catch(err){
+      console.log(err)
+      return response.status(400).send(err);
+    }
 
-    return response.status(200).send(transaction);
   })
+
+  
   app.get('/transaction/:id', {onRequest: [verifyJwt]},async (request: FastifyRequest, response: FastifyReply) => {
     const {id}= request.params as { id: string }
     const user: any = await prisma.user.findUnique({
