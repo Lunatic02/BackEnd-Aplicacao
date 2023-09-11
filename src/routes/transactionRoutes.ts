@@ -55,4 +55,25 @@ export async function transactionRoutes(app: FastifyInstance) {
 
     return response.status(200).send(transaction);
   })
+  app.delete('/transaction/:email/:id', {onRequest: [verifyJwt]}, async(request: FastifyRequest, response: FastifyReply)=>{
+    const {id}= request.params as { id: string }
+    const {email}= request.params as { email: string }
+    const user: any = await prisma.user.findUnique({
+      where: {
+        email: email
+      }
+    })
+    try{
+      const transaction = await prisma.transaction.delete({
+        where: {
+         id,
+         userId: user.id
+        }
+       })
+   
+       return response.status(200).send('Deletada com sucesso');
+    } catch(err){
+      return response.status(404).send(err);
+    }
+  })
 }
